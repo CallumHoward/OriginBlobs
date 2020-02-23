@@ -1,0 +1,23 @@
+#ifndef UTILS_HPP
+#define UTILS_HPP
+
+namespace ch {
+
+class Logger {
+public:
+    void info(const String& message) {
+        if (not sInitialised) {
+            Serial.begin(sBaud);
+            sInitialised = true;
+        }
+        Serial.print(message);
+    }
+
+private:
+    const int sBaud = 115200;
+    bool sInitialised = false;
+};
+
+} // namespace ch
+
+#endif
