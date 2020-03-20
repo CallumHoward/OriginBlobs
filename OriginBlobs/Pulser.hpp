@@ -14,7 +14,7 @@ public:
         // Setup timer and attach timer to a led pin
         ledcSetup(mLedChannel, mLedBaseFreq, mTimerResolution);
         ledcAttachPin(mLedPin, mLedChannel);
-        mDutyFactor = ipow(2, mTimerResolution) / mMaxBrightness;
+        mDutyFactor = (1 << mTimerResolution) / mMaxBrightness;
     }
 
     // Arduino like analogWrite
