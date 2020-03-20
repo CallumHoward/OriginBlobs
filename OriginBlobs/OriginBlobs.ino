@@ -1,7 +1,7 @@
 // OriginBlobs.ino
 // Callum Howard, 2020
 
-#include "SketchHandler.hpp"
+#include "src/SketchHandler.hpp"
 
 ch::SketchHandler* sketch;
 

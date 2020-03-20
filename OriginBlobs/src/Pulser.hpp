@@ -4,7 +4,7 @@
 #ifndef BLINKER_HPP
 #define BLINKER_HPP
 
-#include "Utils.hpp"
+#include <Array>
 
 namespace ch {
 
@@ -55,11 +55,16 @@ private:
     const uint8_t mTimerResolution = 13;        // from 0 to 255
     const uint8_t mMaxBrightness = 255;
     const unsigned long mInterval = 30;        // interval at which to blink (milliseconds)
+
     uint32_t mDutyFactor;
     bool mTriggered = false;  //TODO include this
     unsigned long mPreviousMillis = 0;          // will store last time LED was updated
     uint8_t mBrightness = 0;                    // ledState used to set the LED
     uint8_t mFadeAmount = 5;
+
+    // Bezier animation curve
+    static constexpr std::array<float, 4> xs{0, 0.22, 0.36, 1};
+    static constexpr std::array<float, 4> ys{0, 1.0, 1.0, 1.0};
 };
 
 } // namespace ch
