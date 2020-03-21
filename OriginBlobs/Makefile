@@ -1,16 +1,31 @@
+CXX=g++
+CPPFLAGS=-std=c++1y -Wall -Wextra -pedantic -Wno-unused-parameter -Wno-c++98-compat
 
-SRC=$(wildcard *.cpp *.hpp *.ino)
 OUT=OriginBlobs
+SRC_DIR=src
+BIN_DIR=bin
+TEST_DIR=test
+INCLUDE_DIR=include
 
-.PHONY: all clean
+SRC=$(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/*.hpp *.ino)
+TESTS=$(wildcard $(TEST_DIR)/*.cpp)
+TEST_TARGETS=$(patsubst $(TEST_DIR)/%.cpp,$(BIN_DIR)/%,$(TESTS))
+OUTPUT_FILES=$(wildcard $(BIN_DIR)/*)
+
+.PHONY: all test clean
 
 all: $(SRC)
 	@arduino-cli compile \
 		--fqbn esp32:esp32:esp32:PartitionScheme=min_spiffs \
-		--output bin/$(OUT) \
+		--output "$(BIN_DIR)/$(OUT)" \
 		--warnings all \
 		"$(PWD)" \
 		2>&1 | sed -E 's%(/.+)+/sketch/%%' 1>&2
 
+test: $(TEST_TARGETS)
+
+$(TEST_TARGETS): $(BIN_DIR)/%: $(TEST_DIR)/%.cpp
+	$(CXX) $(CPPFLAGS) -D TEST -g -I $(SRC_DIR) -I $(INCLUDE_DIR) $(TEST_DIR)/$*.cpp -o $@
+
 clean:
-	rm -rf {bin,cache}/* *.gch
+	rm -rf -v $(OUTPUT_FILES) "$(SRC_DIR)/*.gch"
