@@ -20,8 +20,8 @@ public:
     SketchHandler() :
         pulser{2},
         bmp280{},
-        ota{BOARD_NAME, ssid, password, 80}
-        //mqttHandler{}
+        ota{BOARD_NAME, ssid, password, 80},
+        mqttHandler{}
     {
         ota.begin();
         //scanner.setup(BOARD_NAME);
@@ -34,7 +34,7 @@ public:
         pulser.update();
         bmp280.update();
         //scanner.update();
-        //mqttHandler.update();
+        mqttHandler.update();
     }
 
 private:
@@ -42,7 +42,7 @@ private:
     ch::BMP280 bmp280;
     ch::OTAHandler ota;
     //ch::BLEScanner scanner;
-    //ch::MQTTHandler mqttHandler;
+    ch::MQTTHandler mqttHandler;
 };
 
 
