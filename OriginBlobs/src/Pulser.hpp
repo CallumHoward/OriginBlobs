@@ -4,7 +4,11 @@
 #ifndef BLINKER_HPP
 #define BLINKER_HPP
 
-#include <Array>
+#include <array>
+#include <cmath>
+
+#include "Utils.hpp"  // bezierPoint, lerp
+
 
 namespace ch {
 
@@ -36,16 +40,22 @@ public:
             mPreviousMillis = currentMillis;
 
             // change the brightness for next time through the loop:
-            mBrightness = mBrightness + mFadeAmount;
-
-            // reverse the direction of the fading at the ends of the fade:
-            if (mBrightness <= 0 || mBrightness >= mMaxBrightness) {
-                mFadeAmount = -mFadeAmount;
+            const unsigned long elapsed = (currentMillis - mTriggeredMillis);
+            if (elapsed < mDuration) {
+                const float t = static_cast<float>(elapsed) / mDuration;
+                mBrightness = lerp(mMaxBrightness, static_cast<uint8_t>(0), bezierPoint(xs, t));
+            } else {
+                mBrightness = 0;
+                trigger();
             }
 
             // set the LED with the ledState of the variable:
             ledcAnalogWrite(mLedPin, mBrightness);
         }
+    }
+
+    void trigger() {
+        mTriggeredMillis = millis();
     }
 
 private:
@@ -54,17 +64,20 @@ private:
     const uint16_t mLedBaseFreq = 5000;
     const uint8_t mTimerResolution = 13;        // from 0 to 255
     const uint8_t mMaxBrightness = 255;
+    const unsigned long mDuration = 200;
     const unsigned long mInterval = 30;        // interval at which to blink (milliseconds)
 
     uint32_t mDutyFactor;
-    bool mTriggered = false;  //TODO include this
+    unsigned long mTriggeredMillis = 0;          // will store last time triggered
     unsigned long mPreviousMillis = 0;          // will store last time LED was updated
     uint8_t mBrightness = 0;                    // ledState used to set the LED
     uint8_t mFadeAmount = 5;
 
     // Bezier animation curve
-    static constexpr std::array<float, 4> xs{0, 0.22, 0.36, 1};
-    static constexpr std::array<float, 4> ys{0, 1.0, 1.0, 1.0};
+    const std::array<float, 4> xs = std::array<float, 4>{0.0f, 0.22f, 0.36f, 1.0f};
+    //static constexpr std::array<float, 4> ys{0, 1.0, 1.0, 1.0};
+
+    ch::Logger log;
 };
 
 } // namespace ch

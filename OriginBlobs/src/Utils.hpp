@@ -1,25 +1,27 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <Array>
-#include <Utility>
+#ifdef TEST
+#include <cmath>
+#endif
+
+#include <array>
+#include <utility>  // pair
 
 namespace ch {
 
-// return point on given cubic bezier curve given u in range [0, 1]
-inline std::pair<float, float> bezierCurve(const std::array<float, 4>& xs, const std::array<float, 4>& ys, const float u) {
-    return std::pair<float, float>{
-        pow(1 - u, 3) * xs[0] +
-        3 * u * pow(1 - u, 2) * xs[1] +
-        3 * pow(u, 2) * (1 - u) * xs[2] +
-        pow(u, 3) * xs[3],
-        pow(1 - u, 3) * ys[0] +
-        3 * u * pow(1 - u, 2) * ys[1] +
-        3 * pow(u, 2) * (1 - u) * ys[2] +
-        pow(u, 3) * ys[3]
-    };
+// return value on given cubic bezier curve given t in range [0, 1]
+inline float bezierPoint(const std::array<float, 4>& v, const float t) {
+    const float t1 = 1.0f - t;
+    return (v[0] * t1 + 3 * v[1] * t) * t1 * t1 + (3 * v[2] * t1 + v[3] * t) * t * t;
 }
 
+template <typename T, typename L>
+T lerp(const T &a, const T &b, L factor) {
+    return a + (b - a) * factor;
+}
+
+#ifndef TEST
 class Logger {
 public:
     void info(const String &message) {
@@ -50,6 +52,7 @@ private:
     const int sBaud = 115200;
     bool sInitialised = false;
 };
+#endif
 
 }  // namespace ch
 
