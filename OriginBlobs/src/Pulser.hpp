@@ -46,7 +46,6 @@ public:
                 mBrightness = lerp(mMaxBrightness, static_cast<uint8_t>(0), bezierPoint(xs, t));
             } else {
                 mBrightness = 0;
-                trigger();
             }
 
             // set the LED with the ledState of the variable:
@@ -55,6 +54,7 @@ public:
     }
 
     void trigger() {
+        log.info("Pulse triggered!\n");
         mTriggeredMillis = millis();
     }
 
