@@ -58,31 +58,33 @@ public:
             mPressureBuffer.push_back(currentPressure);
             mFloatingAverage += currentPressure;
 
-            log.info(F("Pressure "));
-            log.info(currentPressure);
-            log.info(F(","));
+            //log.info(F("Pressure "));
+            //log.info(currentPressure);
+            //log.info(F(","));
 
-            log.info(F("Average "));
-            log.info(mFloatingAverage / mBufferSize);
-            log.info(F("\n"));
+            //log.info(F("Average "));
+            //log.info(mFloatingAverage / mBufferSize);
+            //log.info(F("\n"));
 
             if (currentPressure > (mFloatingAverage / mBufferSize)  + mThreshold) {
                 log.info(F("Pressure triggered!"));
                 log.info(F("\n"));
+                mActivationCallback();
+            } else {
+                log.info(".");
             }
-            mActivationCallback();
         }
     }
 
     void setActivationCallback(const std::function<void()>& activationCallback) {
-        log.info(F("Set Activation Callback\n"));
         mActivationCallback = activationCallback;
+        log.info(F("Sucessfully set Activation Callback.\n"));
     }
 
 private:
     ch::Logger log;
     unsigned long mPreviousMillis = 0;        // will store last time readings were printed
-    const long mInterval = 1250;           // interval at which to blink (milliseconds)
+    const long mInterval = 30;           // interval at which to blink (milliseconds)
     float lastPressure = 0;
     const float mThreshold = 35;
 

@@ -54,7 +54,6 @@ public:
     }
 
     void trigger() {
-        log.info("Pulse triggered!\n");
         mTriggeredMillis = millis();
     }
 
