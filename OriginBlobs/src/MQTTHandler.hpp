@@ -5,9 +5,12 @@
 #define MQTTHANDLER_HPP
 
 #include <functional>  // bind
+#include <string>
+
 #include <WiFiClient.h>
 #include <PubSubClient.h>
 #include "Credentials.hpp"
+#include "Utils.hpp"  // log
 
 namespace ch {
 
@@ -34,24 +37,29 @@ public:
         mPubSubClient.setCallback(callbackFunction);
     }
 
-    void callback(char* topic, byte* payload, unsigned int length) {
-        Serial.print("Message arrived [");
-        Serial.print(topic);
-        Serial.print("] ");
-        for (int i = 0; i < length; i++) {
-            Serial.print((char)payload[i]);
+    void callback(char* inTopic, byte* payload, unsigned int length) {
+        const auto topic = std::string(inTopic);
+        const auto message = std::string(reinterpret_cast<char*>(payload), length);
+        if (topic == "pulse") {
+            mPulseCallback();
+        } else if (topic == "rollCall") {
+            mPubSubClient.publish(topic.c_str(), getId().c_str());
+        } else if (topic == "assign" && message.rfind(getId(), 0)) {
+            mSoulMate = std::string{message.cbegin() + getId().size() + 1, message.cend()};
+        } else if (topic == "update") {
+            mUpdateCallback();
         }
-        Serial.println();
+    }
 
-        //// Switch on the LED if an 1 was received as first character
-        //if ((char)payload[0] == '1') {
-        //    digitalWrite(BUILTIN_LED, LOW);   // Turn the LED on (Note that LOW is the voltage level
-        //    // but actually the LED is on; this is because
-        //    // it is active low on the ESP-01)
-        //} else {
-        //    digitalWrite(BUILTIN_LED, HIGH);  // Turn the LED off by making the voltage HIGH
-        //}
-
+    std::string getId() {
+        // The chip ID is essentially its MAC address(length: 6 bytes).
+        uint64_t chipId = ESP.getEfuseMac();
+        const size_t bufferSize = 6;
+        char messageBuffer[bufferSize];
+        snprintf(messageBuffer, bufferSize, "%04X%08X",
+                static_cast<uint16_t>(chipId >> 32),    // High 2 bytes
+                static_cast<uint32_t>(chipId));         // Low 4 bytes
+        return std::string{messageBuffer, bufferSize};
     }
 
     void reconnect() {
@@ -65,9 +73,9 @@ public:
             if (mPubSubClient.connect(clientId.c_str())) {
                 Serial.println("connected");
                 // Once connected, publish an announcement...
-                mPubSubClient.publish("outTopic", "hello world");
+                mPubSubClient.publish("newlyConnected", "hello world");
                 // ... and resubscribe
-                mPubSubClient.subscribe("inTopic");
+                mPubSubClient.subscribe("rollCall");
             } else {
                 Serial.print("failed, rc=");
                 Serial.print(mPubSubClient.state());
@@ -79,28 +87,43 @@ public:
     }
 
     void update() {
-        if (!mPubSubClient.connected()) {
-            reconnect();
-        }
+        if (!mPubSubClient.connected()) { reconnect(); }
         mPubSubClient.loop();
 
-        long now = millis();
-        if (now - mLastMessage > 2000) {
-            mLastMessage = now;
+        unsigned long currentMillis = millis();
+        if (currentMillis - mPreviousMillis > mInterval) {
+            mPreviousMillis = currentMillis;
             ++mCounter;
-            snprintf(mMessageBuffer, 50, "hello world #%d", mCounter);
-            Serial.print("Publish message: ");
-            Serial.println(mMessageBuffer);
-            mPubSubClient.publish("outTopic", mMessageBuffer);
+            mPubSubClient.publish("ping", getId().c_str());
         }
+    }
+
+    void setPulseCallback(const std::function<void()>& pulseCallback) {
+        mPulseCallback = pulseCallback;
+        log.info(F("Sucessfully set Pulse Callback.\n"));
+    }
+
+    void notifyPulseSoulMate() {
+        snprintf(mMessageBuffer, sBufferSize, "pulse");
+        mPubSubClient.publish(mSoulMate.c_str(), mMessageBuffer);
     }
 
 private:
     WiFiClient mWifiClient;
     PubSubClient mPubSubClient;
-    char mMessageBuffer[50];
-    long mLastMessage = 0;
+
+    std::function<void()> mPulseCallback;
+    std::function<void()> mUpdateCallback;
+
+    std::string mSoulMate;
+
+    static constexpr size_t sBufferSize = 50;
+    char mMessageBuffer[sBufferSize];
+    unsigned long mPreviousMillis = 0;
+    const unsigned long mInterval = 5000;
     int mCounter = 0;
+
+    ch::Logger log;
 };
 
 } // namespace ch
