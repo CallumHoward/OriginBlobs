@@ -25,7 +25,10 @@ public:
     {
         ota.begin();
         //scanner.setup(BOARD_NAME);
-        bmp280.setActivationCallback(std::bind(&ch::Pulser::trigger, &pulser));
+        mqttHandler.setPulseCallback(std::bind(&ch::Pulser::trigger, &pulser));
+        bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));
+        bmp280.subscribeToActivation(
+                std::bind(&ch::MQTTHandler::notifyPulseSoulMate, &mqttHandler));
     }
 
     void update() {
