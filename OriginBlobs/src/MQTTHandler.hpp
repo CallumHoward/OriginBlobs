@@ -16,7 +16,7 @@ namespace ch {
 
 class MQTTHandler {
 public:
-    MQTTHandler() {
+    MQTTHandler(const std::function<void()>& pulseCallback) : mPulseCallback{pulseCallback} {
         mWifiClient = WiFiClient{};
         mPubSubClient = PubSubClient{mWifiClient};
 
@@ -98,11 +98,6 @@ public:
         }
     }
 
-    void setPulseCallback(const std::function<void()>& pulseCallback) {
-        mPulseCallback = pulseCallback;
-        log.info(F("Sucessfully set Pulse Callback.\n"));
-    }
-
     void notifyPulseSoulMate() {
         snprintf(mMessageBuffer, sBufferSize, "pulse");
         mPubSubClient.publish(mSoulMate.c_str(), mMessageBuffer);
@@ -112,7 +107,7 @@ private:
     WiFiClient mWifiClient;
     PubSubClient mPubSubClient;
 
-    std::function<void()> mPulseCallback;
+    const std::function<void()> mPulseCallback;
     std::function<void()> mUpdateCallback;
 
     std::string mSoulMate;

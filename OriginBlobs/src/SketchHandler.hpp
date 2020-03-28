@@ -21,11 +21,10 @@ public:
         pulser{2},
         bmp280{},
         ota{BOARD_NAME, ssid, password, 80},
-        mqttHandler{}
+        mqttHandler{std::bind(&ch::Pulser::trigger, &pulser)}
     {
         ota.begin();
         //scanner.setup(BOARD_NAME);
-        mqttHandler.setPulseCallback(std::bind(&ch::Pulser::trigger, &pulser));
         bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));
         bmp280.subscribeToActivation(
                 std::bind(&ch::MQTTHandler::notifyPulseSoulMate, &mqttHandler));
