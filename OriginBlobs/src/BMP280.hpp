@@ -67,18 +67,15 @@ public:
             //log.info(F("\n"));
 
             if (currentPressure > (mFloatingAverage / mBufferSize)  + mThreshold) {
-                log.info(F("Pressure triggered!"));
-                log.info(F("\n"));
-                mActivationCallback();
-            } else {
-                log.info(".");
+                log.info(F("Pressure triggered!\n"));
+                for (const auto& event : mActivationSubscribers) { event(); }
             }
         }
     }
 
-    void setActivationCallback(const std::function<void()>& activationCallback) {
-        mActivationCallback = activationCallback;
-        log.info(F("Sucessfully set Activation Callback.\n"));
+    void subscribeToActivation(const std::function<void()>& activationCallback) {
+        mActivationSubscribers.push_back(activationCallback);
+        log.info(F("Sucessfully subscribed to activation event.\n"));
     }
 
 private:
@@ -91,7 +88,7 @@ private:
     float mFloatingAverage = 0;  // not true average, must divide when used
     const int mBufferSize = 0;
     std::deque<float> mPressureBuffer;
-    std::function<void()> mActivationCallback;
+    std::vector<std::function<void()>> mActivationSubscribers;
 
     Adafruit_BMP280 mBmp; // I2C
     //Adafruit_BMP280 mBmp(BMP_CS); // hardware SPI
