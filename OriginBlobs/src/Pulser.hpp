@@ -7,7 +7,7 @@
 #include <array>
 #include <cmath>
 
-#include "Utils.hpp"  // bezierPoint, lerp
+#include "Utils.hpp"  // bezierPoint, lerp, log
 
 
 namespace ch {
