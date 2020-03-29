@@ -4,16 +4,25 @@ import Section from "./Section";
 import { Container, Row, Col } from "reactstrap";
 
 export const Hello = () => {
+  const [deviceData, setDeviceData] = React.useState([]);
   return (
-    <Container>
-      <Row>
-        <h1>Dashboard</h1>
-      </Row>
-      <Row>
-        <Col>
-          <DeviceTable />
-        </Col>
-      </Row>
-    </Container>
+    <div style={{ backgroundColor: "#eee", height: "100vh", width: "100vw" }}>
+      <Container>
+        <Row>
+          <Col>
+            <Section>
+              <h1>Dashboard</h1>
+            </Section>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Section>
+              <DeviceTable deviceData={deviceData} />
+            </Section>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };

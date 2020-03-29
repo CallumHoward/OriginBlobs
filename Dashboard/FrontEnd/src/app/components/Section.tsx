@@ -1,19 +1,21 @@
-import React, { FunctionComponent } from "react";
+import * as React from "react";
 import styled from "styled-components";
 
 const StyledDiv = styled.div`
-  background-color: #eee;
-  border-radius: 3px;
-  width: 100vw;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  width: 100%;
+  padding: 2rem;
+  margin-bottom: 2rem;
+
+  background: #ffffff;
+  box-shadow: 6px 6px 18px #e6e6e6, -6px -6px 18px #eeeeee;
 `;
 
-type Props = {
-  children: React.ReactNode;
-};
+type Props = {};
 
-const Section: FunctionComponent<Props> = (props) => {
-  console.log(props.children);
-  return <StyledDiv>{props.children}</StyledDiv>;
+const Section: React.FunctionComponent<Props> = ({ children }) => {
+  return <StyledDiv>{children}</StyledDiv>;
 };
 
 export default Section;

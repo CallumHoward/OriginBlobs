@@ -1,11 +1,22 @@
 import * as React from "react";
 import { Table } from "reactstrap";
-import { useTable, useSortBy } from "react-table";
+import { useTable, useSortBy, useRowSelect } from "react-table";
+import styled from "styled-components";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 
-const DeviceTable = () => {
+const StyledTr = styled.tr`
+  &:hover {
+    background-color: #f9f9f9;
+  }
+`;
+
+type Props = {
+  deviceData: any[];
+};
+
+const DeviceTable: React.FunctionComponent<Props> = (props: Props) => {
   const columns = React.useMemo(
     () => [
       {
@@ -78,13 +89,17 @@ const DeviceTable = () => {
     getTableBodyProps,
     headerGroups,
     rows,
+    toggleAllRowsSelected,
     prepareRow,
+    state,
   } = useTable(
     {
+      autoResetSelectedRows: false,
       data,
       columns,
     },
-    useSortBy
+    useSortBy,
+    useRowSelect
   );
 
   return (
@@ -97,11 +112,18 @@ const DeviceTable = () => {
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render("Header")}
                   <span style={{ paddingLeft: "0.5rem" }}>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? <FontAwesomeIcon icon={faAngleUp} />
-                        : <FontAwesomeIcon icon={faAngleDown} />
-                          : <FontAwesomeIcon icon={faAngleDown} style={{ opacity: 0 }} />}
+                    {column.isSorted ? (
+                      column.isSortedDesc ? (
+                        <FontAwesomeIcon icon={faAngleUp} />
+                      ) : (
+                        <FontAwesomeIcon icon={faAngleDown} />
+                      )
+                    ) : (
+                      <FontAwesomeIcon
+                        icon={faAngleDown}
+                        style={{ opacity: 0 }}
+                      />
+                    )}
                   </span>
                 </th>
               ))}
@@ -113,13 +135,23 @@ const DeviceTable = () => {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
+              <StyledTr
+                {...row.getRowProps({
+                  style: {
+                    backgroundColor: row.isSelected ? "#eee" : "",
+                  },
+                })}
+                onClick={(e: any) => {
+                  toggleAllRowsSelected(false);
+                  row.toggleRowSelected();
+                }}
+              >
                 {row.cells.map((cell) => {
                   return (
                     <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   );
                 })}
-              </tr>
+              </StyledTr>
             );
           })}
         </tbody>
