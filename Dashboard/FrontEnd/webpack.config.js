@@ -1,45 +1,50 @@
-const path = require('path'),
-    webpack = require('webpack'),
-    HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require("path"),
+  webpack = require("webpack"),
+  HtmlWebpackPlugin = require("html-webpack-plugin");
 
 // 1. import default from the plugin module
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
+const createStyledComponentsTransformer = require("typescript-plugin-styled-components")
+  .default;
 
 // 2. create a transformer;
 // the factory additionally accepts an options object which described below
 const styledComponentsTransformer = createStyledComponentsTransformer();
 
 module.exports = {
-    entry: {
-        app: ['./src/app/App.tsx', 'webpack-hot-middleware/client'],
-        vendor: ['react', 'react-dom']
-    },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
-        filename: 'bundle.js'
-    },
-    devtool: 'source-map',
-    resolve: {
-        extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
-    },
-    module: {
-        rules: [
-            {
-                test: /\.(ts|tsx)$/,
-                loader: 'ts-loader',
-                options: {
-                  getCustomTransformers: () => ({ before: [styledComponentsTransformer] })
-                }
-            },
-            { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
-        ]
-    },
-    plugins: [
-        new webpack.HotModuleReplacementPlugin()
+  entry: {
+    app: ["./src/app/App.tsx", "webpack-hot-middleware/client"],
+    vendor: ["react", "react-dom"],
+  },
+  output: {
+    path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
+    filename: "bundle.js",
+  },
+  devtool: "source-map",
+  resolve: {
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        loader: "ts-loader",
+        options: {
+          getCustomTransformers: () => ({
+            before: [styledComponentsTransformer],
+          }),
+        },
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
     ],
-    devServer: {
-      contentBase: './dist',
-      hot: true
-    }
-}
+  },
+  plugins: [new webpack.HotModuleReplacementPlugin()],
+  devServer: {
+    contentBase: "./dist",
+    hot: true,
+  },
+};

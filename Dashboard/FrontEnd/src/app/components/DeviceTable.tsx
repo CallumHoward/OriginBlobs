@@ -1,14 +1,10 @@
 import * as React from "react";
 import styled from 'styled-components';
-//import tw from "tailwind.macro";
-
-const StyledTable = styled.table`
-  color: red;
-`;
+import { Table } from 'reactstrap';
 
 const DeviceTable = () => (
   <>
-    <StyledTable>
+    <Table>
       <thead>
         <tr>
           <th>ID</th>
@@ -49,7 +45,7 @@ const DeviceTable = () => (
           <td></td>
         </tr>
       </tbody>
-    </StyledTable>
+    </Table>
   </>
 );
 

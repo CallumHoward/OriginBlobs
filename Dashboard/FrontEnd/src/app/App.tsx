@@ -3,6 +3,8 @@ import * as ReactDOM from "react-dom";
 import { Hello } from "./components/Hello";
 declare let module: any;
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 ReactDOM.render(<Hello />, document.getElementById("root"));
 
 if (module.hot) {
