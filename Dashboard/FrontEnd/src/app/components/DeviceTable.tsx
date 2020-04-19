@@ -12,11 +12,21 @@ const StyledTr = styled.tr`
   }
 `;
 
-type Props = {
-  deviceData: any[];
+export type IElement = {
+  col1?: string;
+  col2?: string;
+  col3?: string;
+  col4?: string;
+  col5?: string;
+  col6?: string;
+  col7?: string;
 };
 
-const DeviceTable: React.FunctionComponent<Props> = (props: Props) => {
+type Props = {
+  data: any[];
+};
+
+const DeviceTable: React.FunctionComponent<Props> = ({data}) => {
   const columns = React.useMemo(
     () => [
       {
@@ -51,38 +61,38 @@ const DeviceTable: React.FunctionComponent<Props> = (props: Props) => {
     []
   );
 
-  const data = React.useMemo(
-    () => [
-      {
-        col1: "",
-        col2: "Stacey",
-        col3: "",
-        col4: "",
-        col5: "",
-        col6: "",
-        col7: "",
-      },
-      {
-        col1: "",
-        col2: "Baby",
-        col3: "",
-        col4: "",
-        col5: "",
-        col6: "",
-        col7: "",
-      },
-      {
-        col1: "",
-        col2: "Mya",
-        col3: "",
-        col4: "",
-        col5: "",
-        col6: "",
-        col7: "",
-      },
-    ],
-    []
-  );
+  //const data = React.useMemo(
+  //  () => [
+  //    {
+  //      col1: "",
+  //      col2: "Stacey",
+  //      col3: "",
+  //      col4: "",
+  //      col5: "",
+  //      col6: "",
+  //      col7: "",
+  //    },
+  //    {
+  //      col1: "",
+  //      col2: "Baby",
+  //      col3: "",
+  //      col4: "",
+  //      col5: "",
+  //      col6: "",
+  //      col7: "",
+  //    },
+  //    {
+  //      col1: "",
+  //      col2: "Mya",
+  //      col3: "",
+  //      col4: "",
+  //      col5: "",
+  //      col6: "",
+  //      col7: "",
+  //    },
+  //  ],
+  //  []
+  //);
 
   const {
     getTableProps,
