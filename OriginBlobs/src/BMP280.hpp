@@ -5,7 +5,7 @@
 #define BMP280_HPP
 
 #include <deque>
-#include <functional>  // bind
+#include <functional>  // bind, function
 #include <iterator>  // back_inserter
 
 #include <Wire.h>
@@ -20,7 +20,8 @@ class BMP280 {
 public:
     BMP280(const int bufferSize = 32) : mBufferSize{bufferSize} {
         log.info(F("Setting up BMP280..."));
-        if (not mBmp.begin(BMP280_ADDRESS_ALT)) {
+        //if (not mBmp.begin(BMP280_ADDRESS_ALT)) {  // I2C
+        if (not mBmp.begin()) {
             log.info(F("\nCould not find a valid BMP280 sensor, check wiring!\n"));
         } else {
             log.info(F("done!"));
@@ -90,8 +91,8 @@ private:
     std::deque<float> mPressureBuffer;
     std::vector<std::function<void()>> mActivationSubscribers;
 
-    Adafruit_BMP280 mBmp; // I2C
-    //Adafruit_BMP280 mBmp(BMP_CS); // hardware SPI
+    //Adafruit_BMP280 mBmp; // I2C
+    Adafruit_BMP280 mBmp{5}; // hardware SPI, BMP_CS
     //Adafruit_BMP280 mBmp(BMP_CS, BMP_MOSI, BMP_MISO,  BMP_SCK);
 };
 
