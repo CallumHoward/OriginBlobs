@@ -6,8 +6,11 @@
 
 #define BOARD_NAME "esp32_stacey"
 
+#include <functional>  // bind
+
 #include "OTAHandler.hpp"
-#include "Pulser.hpp"
+//#include "Pulser.hpp"
+#include "NeoPulser.hpp"
 #include "BLEScanner.hpp"
 #include "MQTTHandler.hpp"
 #include "BMP280.hpp"
@@ -18,33 +21,36 @@ namespace ch {
 class SketchHandler {
 public:
     SketchHandler() :
-        pulser{2},
+        //pulser{2},
         bmp280{},
-        ota{BOARD_NAME, ssid, password, 80},
-        mqttHandler{std::bind(&ch::Pulser::trigger, &pulser)}
+        neoPulser{},
+        ota{BOARD_NAME, ssid, password, 80}
+        //mqttHandler{std::bind(&ch::Pulser::trigger, &pulser)}
     {
         ota.begin();
         //scanner.setup(BOARD_NAME);
-        bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));
-        bmp280.subscribeToActivation(
-                std::bind(&ch::MQTTHandler::notifyPulseSoulMate, &mqttHandler));
+        //bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));
+        //bmp280.subscribeToActivation(
+        //        std::bind(&ch::MQTTHandler::notifyPulseSoulMate, &mqttHandler));
     }
 
     void update() {
         ota.update();
         delay(1);
-        pulser.update();
+        //pulser.update();
         bmp280.update();
+        neoPulser.update();
         //scanner.update();
-        mqttHandler.update();
+        //mqttHandler.update();
     }
 
 private:
-    ch::Pulser pulser;
+    //ch::Pulser pulser;
     ch::BMP280 bmp280;
+    ch::NeoPulser neoPulser;
     ch::OTAHandler ota;
-    //ch::BLEScanner scanner;
-    ch::MQTTHandler mqttHandler;
+    // ch::BLEScanner scanner;
+    //ch::MQTTHandler mqttHandler;
 };
 
 
