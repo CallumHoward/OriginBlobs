@@ -3,4 +3,4 @@ go:
 
 js:
 	protoc --js_out=import_style=commonjs:. \
-		--grpc-web-out=import_style=commonjs,mode=grpcwebtext:. chat.proto
+		--grpc-web_out=import_style=commonjs,mode=grpcwebtext:. chat.proto
