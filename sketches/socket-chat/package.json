@@ -1,0 +1,17 @@
+{
+    "name": "socket-chat-example",
+    "version": "0.0.1",
+    "description": "my first socket.io app",
+    "dependencies": {
+        "express": "^4.17.1",
+        "immutable": "^4.0.0-rc.12",
+        "slate": "^0.57.1",
+        "slate-react": "^0.57.1",
+        "socket.io": "^2.3.0"
+    },
+    "devDependencies": {
+        "@types/immutable": "^3.8.7",
+        "@types/slate": "^0.47.5",
+        "@types/slate-react": "^0.22.9"
+    }
+}
