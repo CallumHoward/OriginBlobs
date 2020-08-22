@@ -3,7 +3,7 @@ import DeviceTable, { IElement } from "./DeviceTable";
 import Section from "./Section";
 import { Container, Row, Col } from "reactstrap";
 
-const updateRateMS = 1600;
+const updateRateMS = 16000;
 let sourceData: IElement[] = [];
 
 export const Hello = () => {
@@ -14,7 +14,7 @@ export const Hello = () => {
     timerRunning.current = true;
     setInterval(() => {
       sourceData.push(makeRow(sourceData.length));
-      let newData = [...sourceData];
+      const newData = [...sourceData];
       setDeviceData(newData);
     }, updateRateMS);
   }
