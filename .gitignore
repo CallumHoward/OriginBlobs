@@ -4,4 +4,6 @@ bin
 *.o
 *.gch
 
+grpc/grpc-go
+
 Credentials.hpp
