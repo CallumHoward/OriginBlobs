@@ -1,10 +1,22 @@
 syntax = "proto3";
+
 package chat;
 
 message Message {
-    string body = 1;
+  string body = 1;
+}
+
+message Device {
+  string id = 1;
+  string name = 1;
+  string type = 1;
+  string lastContact = 1;
+  string battery = 1;
+  string version = 1;
+  string status = 1;
 }
 
 service ChatService {
-    rpc SayHello(Message) returns (Message) {}
+  rpc SayHello(Message) returns (Message) {}
+  //rpc GetDevices() returns (stream Device) {}
 }
