@@ -30,6 +30,7 @@ function getServer() {
 
 if (require.main === module) {
   var server = getServer();
+  console.log("Running grpc server on localhost:9090");
   server.bindAsync(
     "0.0.0.0:9090",
     grpc.ServerCredentials.createInsecure(),
