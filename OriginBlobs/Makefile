@@ -17,7 +17,7 @@ OUTPUT_FILES=$(wildcard $(BIN_DIR)/*)
 all: $(SRC)
 	@arduino-cli compile \
 		--fqbn esp32:esp32:esp32:PartitionScheme=min_spiffs \
-		--output "$(BIN_DIR)/$(OUT)" \
+		--output-dir "$(BIN_DIR)/$(OUT)" \
 		--warnings all \
 		"$(PWD)" \
 		2>&1 | sed -E 's%(/.+)+/sketch/%%' 1>&2
