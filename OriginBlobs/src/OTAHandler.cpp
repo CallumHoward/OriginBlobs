@@ -28,17 +28,15 @@ void OTAHandler::connectToWifi() {
         delay(500);
         log.info(".");
     }
-    log.info(String("\nConnected to " + mSsid + "\nIP address: " + WiFi.localIP() + "\n"));
+    log.info(String("\nConnected to " + mSsid +
+            "\nIP address: " + String(WiFi.localIP()) + "\n"));
 
     /*use mdns for host name resolution*/
-    if (!MDNS.begin(mHostname.c_str())) { //http://esp32.local
+    if (!MDNS.begin(mHostname.c_str())) {  // http://esp32.local
         log.info("Error setting up MDNS responder!\n");
-        while (1) {
-            delay(1000);
-        }
+        while (1) { delay(1000); }
     }
     log.info("mDNS responder started\n");
-
 }
 
 void OTAHandler::beginServing() {
@@ -54,20 +52,24 @@ void OTAHandler::beginServing() {
     };
 
     const auto uploadHandler = [this]() {
-        HTTPUpload& upload = mServer.upload();
+        HTTPUpload &upload = mServer.upload();
         if (upload.status == UPLOAD_FILE_START) {
             Serial.printf("Update: %s\n", upload.filename.c_str());
-            if (!Update.begin(UPDATE_SIZE_UNKNOWN)) { // start with max available size
+            if (!Update.begin(UPDATE_SIZE_UNKNOWN)) {  // start with max
+                                                       // available size
                 Update.printError(Serial);
             }
         } else if (upload.status == UPLOAD_FILE_WRITE) {
             /* flashing firmware to ESP*/
-            if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
+            if (Update.write(upload.buf, upload.currentSize) !=
+                    upload.currentSize) {
                 Update.printError(Serial);
             }
         } else if (upload.status == UPLOAD_FILE_END) {
-            if (Update.end(true)) { //true to set the size to the current progress
-                Serial.printf("Update Success: %u\nRebooting...\n", upload.totalSize);
+            if (Update.end(true)) {  // true to set the size to the current
+                                     // progress
+                Serial.printf(
+                        "Update Success: %u\nRebooting...\n", upload.totalSize);
             } else {
                 Update.printError(Serial);
             }
@@ -82,4 +84,4 @@ void OTAHandler::beginServing() {
     mServer.begin();
 }
 
-}
+}  // namespace ch

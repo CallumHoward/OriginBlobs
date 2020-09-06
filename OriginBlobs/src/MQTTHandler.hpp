@@ -14,6 +14,8 @@
 
 namespace ch {
 
+String ipToString(IPAddress ip);
+
 class MQTTHandler {
 public:
     MQTTHandler(const std::function<void()>& pulseCallback) : mPulseCallback{pulseCallback} {
@@ -21,8 +23,8 @@ public:
         mWifiClient = WiFiClient{};
         mPubSubClient = PubSubClient{mWifiClient};
 
+        // Connect WIFI
         WiFi.begin(ssid, password);
-
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
             Serial.print(".");
@@ -95,7 +97,12 @@ public:
         if (currentMillis - mPreviousMillis > mInterval) {
             mPreviousMillis = currentMillis;
             ++mCounter;
-            const auto message = String(mId.c_str()) + String(" ") + String(mCounter);
+            auto message = String{mId.c_str()} + String{","} +
+                String{mType.c_str()} + String{","} +
+                String{millis()} + String{","} +
+                String{mCounter} + String{","} +
+                String{mVersion.c_str()} + String{","} +
+                ipToString(WiFi.localIP());
             mPubSubClient.publish("ping", message.c_str());
         }
     }
@@ -113,6 +120,9 @@ private:
     std::function<void()> mUpdateCallback;
 
     std::string mId;
+    std::string mType = "ESP32 D1 Mini";
+    std::string mVersion = "0.0.1";
+
     std::string mSoulMate;
 
     static constexpr size_t sBufferSize = 50;
@@ -123,6 +133,13 @@ private:
 
     ch::Logger log;
 };
+
+String ipToString(IPAddress ip) {
+    return String{ip[0]} + String{"."} +
+        String{ip[1]} + String{"."} +
+        String{ip[2]} + String{"."} +
+        String{ip[3]};
+}
 
 } // namespace ch
 
