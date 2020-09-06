@@ -24,8 +24,8 @@ public:
         //pulser{2},
         bmp280{},
         neoPulser{},
-        ota{BOARD_NAME, ssid, password, 80}
-        //mqttHandler{std::bind(&ch::Pulser::trigger, &pulser)}
+        ota{BOARD_NAME, ssid, password, 80},
+        mqttHandler{[](){ Serial.println("Received pulse"); }}
     {
         ota.begin();
         //scanner.setup(BOARD_NAME);
@@ -41,7 +41,7 @@ public:
         bmp280.update();
         neoPulser.update();
         //scanner.update();
-        //mqttHandler.update();
+        mqttHandler.update();
     }
 
 private:
@@ -50,7 +50,7 @@ private:
     ch::NeoPulser neoPulser;
     ch::OTAHandler ota;
     // ch::BLEScanner scanner;
-    //ch::MQTTHandler mqttHandler;
+    ch::MQTTHandler mqttHandler;
 };
 
 

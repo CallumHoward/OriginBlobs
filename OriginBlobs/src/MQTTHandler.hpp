@@ -17,6 +17,7 @@ namespace ch {
 class MQTTHandler {
 public:
     MQTTHandler(const std::function<void()>& pulseCallback) : mPulseCallback{pulseCallback} {
+        mId = getId();
         mWifiClient = WiFiClient{};
         mPubSubClient = PubSubClient{mWifiClient};
 
@@ -42,10 +43,10 @@ public:
         const auto message = std::string(reinterpret_cast<char*>(payload), length);
         if (topic == "pulse") {
             mPulseCallback();
-        } else if (topic == "rollCall") {
+        } else if (topic == "rollCall" && message == "hello") {
             mPubSubClient.publish(topic.c_str(), getId().c_str());
-        } else if (topic == "assign" && message.rfind(getId(), 0)) {
-            mSoulMate = std::string{message.cbegin() + getId().size() + 1, message.cend()};
+        } else if (topic == "assign" && message.rfind(mId, 0)) {
+            mSoulMate = std::string{message.cbegin() + mId.size() + 3, message.cend()};
         } else if (topic == "update") {
             mUpdateCallback();
         }
@@ -94,7 +95,8 @@ public:
         if (currentMillis - mPreviousMillis > mInterval) {
             mPreviousMillis = currentMillis;
             ++mCounter;
-            mPubSubClient.publish("ping", getId().c_str());
+            const auto message = String(mId.c_str()) + String(" ") + String(mCounter);
+            mPubSubClient.publish("ping", message.c_str());
         }
     }
 
@@ -110,6 +112,7 @@ private:
     const std::function<void()> mPulseCallback;
     std::function<void()> mUpdateCallback;
 
+    std::string mId;
     std::string mSoulMate;
 
     static constexpr size_t sBufferSize = 50;
