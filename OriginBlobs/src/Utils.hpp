@@ -24,7 +24,7 @@ T lerp(const T &a, const T &b, L factor) {
 #ifndef TEST
 class Logger {
 public:
-    void info(const String &message) {
+    void info(const String &message) const {
         if (not sInitialised) {
             Serial.begin(sBaud);
             sInitialised = true;
@@ -32,7 +32,7 @@ public:
         Serial.print(message);
     }
 
-    void info(const int value) {
+    void info(const int value) const {
         if (not sInitialised) {
             Serial.begin(sBaud);
             sInitialised = true;
@@ -40,7 +40,7 @@ public:
         Serial.print(value);
     }
 
-    void info(const float value) {
+    void info(const float value) const {
         if (not sInitialised) {
             Serial.begin(sBaud);
             sInitialised = true;
@@ -50,7 +50,7 @@ public:
 
 private:
     const int sBaud = 115200;
-    bool sInitialised = false;
+    mutable bool sInitialised = false;
 };
 #endif
 

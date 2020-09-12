@@ -11,6 +11,7 @@
 #include <PubSubClient.h>
 #include "Credentials.hpp"
 #include "Utils.hpp"  // log
+#include "OTAHandler2.hpp"
 
 namespace ch {
 
@@ -41,17 +42,29 @@ public:
     }
 
     void callback(char* inTopic, byte* payload, unsigned int length) {
-        const auto topic = std::string(inTopic);
+        const auto topic = std::string{inTopic};
+        const auto myUpdateTopic = std::string{"update/" + mId};
         const auto message = std::string(reinterpret_cast<char*>(payload), length);
+
+        Serial.print("myUpdateTopic: ");
+        Serial.println(myUpdateTopic.c_str());
+        Serial.print("topic: ");
+        Serial.println(topic.c_str());
+        Serial.print("message: ");
+        Serial.println(message.c_str());
+
         if (topic == "pulse") {
             mPulseCallback();
         } else if (topic == "rollCall" && message == "hello") {
-            mPubSubClient.publish(topic.c_str(), getId().c_str());
+            mPreviousMillis += mInterval;  // trigger update
+            update();
         } else if (topic == "assign" && message.rfind(mId, 0)) {
             mSoulMate = std::string{message.cbegin() + mId.size() + 3, message.cend()};
-        } else if (topic == "update") {
-            mUpdateCallback();
+        } else if (String{topic.c_str()} == String{myUpdateTopic.c_str()}) {
+            Serial.println("update triggered");
+            ch::execOTA(grpcServer, 2020, String{message.c_str()});
         }
+
     }
 
     std::string getId() {
@@ -66,6 +79,8 @@ public:
     }
 
     void reconnect() {
+        const auto myUpdateTopic = "update/" + mId;
+
         // Loop until we're reconnected
         while (!mPubSubClient.connected()) {
             Serial.print("Attempting MQTT connection...");
@@ -79,6 +94,9 @@ public:
                 mPubSubClient.publish("newlyConnected", "hello world");
                 // ... and resubscribe
                 mPubSubClient.subscribe("rollCall");
+                mPubSubClient.subscribe("pulse");
+                mPubSubClient.subscribe("assign");
+                mPubSubClient.subscribe(myUpdateTopic.c_str());
             } else {
                 Serial.print("failed, rc=");
                 Serial.print(mPubSubClient.state());
@@ -121,7 +139,7 @@ private:
 
     std::string mId;
     std::string mType = "ESP32 D1 Mini";
-    std::string mVersion = "0.0.1";
+    std::string mVersion = "0.1.0";
 
     std::string mSoulMate;
 

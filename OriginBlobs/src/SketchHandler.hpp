@@ -8,7 +8,7 @@
 
 #include <functional>  // bind
 
-#include "OTAHandler.hpp"
+//#include "OTAHandler.hpp"
 //#include "Pulser.hpp"
 #include "NeoPulser.hpp"
 #include "BLEScanner.hpp"
@@ -24,10 +24,10 @@ public:
         //pulser{2},
         bmp280{},
         neoPulser{},
-        ota{BOARD_NAME, ssid, password, 80},
+        //ota{BOARD_NAME, ssid, password, 80},
         mqttHandler{[](){ Serial.println("Received pulse"); }}
     {
-        ota.begin();
+        //ota.begin();
         //scanner.setup(BOARD_NAME);
         //bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));
         //bmp280.subscribeToActivation(
@@ -35,7 +35,7 @@ public:
     }
 
     void update() {
-        ota.update();
+        //ota.update();
         delay(1);
         //pulser.update();
         bmp280.update();
@@ -48,7 +48,7 @@ private:
     //ch::Pulser pulser;
     ch::BMP280 bmp280;
     ch::NeoPulser neoPulser;
-    ch::OTAHandler ota;
+    //ch::OTAHandler ota;
     // ch::BLEScanner scanner;
     ch::MQTTHandler mqttHandler;
 };

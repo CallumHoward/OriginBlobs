@@ -22,6 +22,9 @@ all: $(SRC)
 		"$(PWD)" \
 		2>&1 | sed -E 's%(/.+)+/sketch/%%' 1>&2
 
+up: $(BIN_DIR)/$(OUT)
+	screen -X quit; ./upload.sh
+
 test: $(TEST_TARGETS)
 
 $(TEST_TARGETS): $(BIN_DIR)/%: $(TEST_DIR)/%.cpp
