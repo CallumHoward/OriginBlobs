@@ -32,6 +32,14 @@ public:
         Serial.print(message);
     }
 
+    void info(const unsigned int value) const {
+        if (not sInitialised) {
+            Serial.begin(sBaud);
+            sInitialised = true;
+        }
+        Serial.print(value);
+    }
+
     void info(const int value) const {
         if (not sInitialised) {
             Serial.begin(sBaud);

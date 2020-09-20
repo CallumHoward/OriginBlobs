@@ -28,7 +28,7 @@ public:
         WiFi.begin(ssid, password);
         while (WiFi.status() != WL_CONNECTED) {
             delay(500);
-            Serial.print(".");
+            log.info(".");
         }
 
         randomSeed(micros());
@@ -46,12 +46,13 @@ public:
         const auto myUpdateTopic = std::string{"update/" + mId};
         const auto message = std::string(reinterpret_cast<char*>(payload), length);
 
-        Serial.print("myUpdateTopic: ");
-        Serial.println(myUpdateTopic.c_str());
-        Serial.print("topic: ");
-        Serial.println(topic.c_str());
-        Serial.print("message: ");
-        Serial.println(message.c_str());
+        log.info("myUpdateTopic: ");
+        log.info(myUpdateTopic.c_str());
+        log.info("\ntopic: ");
+        log.info(topic.c_str());
+        log.info("\nmessage: ");
+        log.info(message.c_str());
+        log.info("\n");
 
         if (topic == "pulse") {
             mPulseCallback();
@@ -61,7 +62,7 @@ public:
         } else if (topic == "assign" && message.rfind(mId, 0)) {
             mSoulMate = std::string{message.cbegin() + mId.size() + 3, message.cend()};
         } else if (String{topic.c_str()} == String{myUpdateTopic.c_str()}) {
-            Serial.println("update triggered");
+            log.info("update triggered\n");
             ch::execOTA(grpcServer, 2020, String{message.c_str()});
         }
 
@@ -83,13 +84,13 @@ public:
 
         // Loop until we're reconnected
         while (!mPubSubClient.connected()) {
-            Serial.print("Attempting MQTT connection...");
+            log.info("Attempting MQTT connection...");
             // Create a random mPubSubClient ID
             String clientId = "ESP32Client-";
             clientId += String(random(0xffff), HEX);
             // Attempt to connect
             if (mPubSubClient.connect(clientId.c_str())) {
-                Serial.println("connected");
+                log.info("connected\n");
                 // Once connected, publish an announcement...
                 mPubSubClient.publish("newlyConnected", "hello world");
                 // ... and resubscribe
@@ -98,9 +99,9 @@ public:
                 mPubSubClient.subscribe("assign");
                 mPubSubClient.subscribe(myUpdateTopic.c_str());
             } else {
-                Serial.print("failed, rc=");
-                Serial.print(mPubSubClient.state());
-                Serial.println(" try again in 5 seconds");
+                log.info("failed, rc=");
+                log.info(mPubSubClient.state());
+                log.info(" try again in 5 seconds\n");
                 // Wait 5 seconds before retrying
                 delay(5000);
             }
