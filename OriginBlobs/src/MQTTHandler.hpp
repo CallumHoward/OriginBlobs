@@ -12,6 +12,7 @@
 #include "Credentials.hpp"
 #include "Utils.hpp"  // log
 #include "OTAHandler2.hpp"
+#include "SleepHandler.hpp"
 
 namespace ch {
 
@@ -44,6 +45,7 @@ public:
     void callback(char* inTopic, byte* payload, unsigned int length) {
         const auto topic = std::string{inTopic};
         const auto myUpdateTopic = std::string{"update/" + mId};
+        const auto mySleepTopic = std::string{"sleep/" + mId};
         const auto message = std::string(reinterpret_cast<char*>(payload), length);
 
         log.info("myUpdateTopic: ");
@@ -54,7 +56,14 @@ public:
         log.info(message.c_str());
         log.info("\n");
 
-        if (topic == "pulse") {
+        if (String{topic.c_str()} == String{mySleepTopic.c_str()}) {
+            const auto sleepTime = static_cast<unsigned int>(String(message.c_str()).toInt());
+            log.info("Going to sleep for ");
+            log.info(sleepTime);
+            log.info(" seconds\n");
+            log.flush();
+            ch::deepSleep(String(message.c_str()).toInt());
+        } else if (topic == "pulse") {
             mPulseCallback();
         } else if (topic == "rollCall" && message == "hello") {
             mPreviousMillis += mInterval;  // trigger update
@@ -140,7 +149,7 @@ private:
 
     std::string mId;
     std::string mType = "ESP32 D1 Mini";
-    std::string mVersion = "0.1.0";
+    std::string mVersion = "0.2.0";
 
     std::string mSoulMate;
 

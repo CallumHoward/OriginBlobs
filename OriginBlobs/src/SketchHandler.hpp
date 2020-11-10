@@ -15,6 +15,8 @@
 #include "MQTTHandler.hpp"
 #include "BMP280.hpp"
 #include "Credentials.hpp"
+#include "SleepHandler.hpp"
+#include "Utils.hpp"  // Logger
 
 namespace ch {
 
@@ -27,6 +29,10 @@ public:
         //ota{BOARD_NAME, ssid, password, 80},
         mqttHandler{[](){ Serial.println("Received pulse"); }}
     {
+        ++bootCount;
+        ch::Logger log;
+        log.info(wakeupReason().c_str());
+
         //ota.begin();
         //scanner.setup(BOARD_NAME);
         //bmp280.subscribeToActivation(std::bind(&ch::Pulser::trigger, &pulser));

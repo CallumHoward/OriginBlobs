@@ -28,7 +28,7 @@ public:
 
             mIsOn = !mIsOn;
             if (mIsOn) {
-                mPixels.setPixelColor(0, mPixels.Color(0, 127, 255));
+                mPixels.setPixelColor(0, mPixels.Color(0, 12, 25));
             } else {
                 mPixels.setPixelColor(0, mPixels.Color(0, 0, 0));
             }

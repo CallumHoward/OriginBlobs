@@ -56,6 +56,14 @@ public:
         Serial.print(value);
     }
 
+    void flush() const {
+        if (not sInitialised) {
+            Serial.begin(sBaud);
+            sInitialised = true;
+        }
+        Serial.flush();
+    }
+
 private:
     const int sBaud = 115200;
     mutable bool sInitialised = false;
